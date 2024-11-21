@@ -128,7 +128,7 @@ Tab1Widget::Tab1Widget(QWidget *parent)
 
 void Tab1Widget::onInitPortClicked()
 {
-    QString selectedPort = "/dev/pts/";
+    QString selectedPort;
 
     #ifdef Q_OS_WIN
         if      (com1Button->isChecked()) selectedPort = "COM1";
