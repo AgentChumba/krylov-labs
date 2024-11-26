@@ -1,5 +1,9 @@
 #include "../include/Tab2Widget.h"
 
+#ifdef Q_OS_WIN
+#pragma comment(lib, "setupapi.lib")
+#endif
+
 Tab2Widget::~Tab2Widget() {}
 
 Tab2Widget::Tab2Widget(QWidget *parent)
@@ -128,7 +132,37 @@ void Tab2Widget::populateUsbDevices() {
 #endif
 
 #ifdef Q_OS_WIN
-    //
-#endif
+        // Получаем список всех USB-устройств
+    HDEVINFO deviceInfoSet = SetupDiGetClassDevs(&GUID_DEVCLASS_USB, NULL, NULL, DIGCF_PRESENT);
+    if (deviceInfoSet == INVALID_HANDLE_VALUE) {
+        qDebug() << "Не удалось получить список устройств.";
+        return;
+    }
 
+    SP_DEVINFO_DATA deviceInfoData;
+    deviceInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
+    DWORD deviceIndex = 0;
+
+    // Перебираем устройства
+    while (SetupDiEnumDeviceInfo(deviceInfoSet, deviceIndex++, &deviceInfoData)) {
+        // Получаем описание устройства
+        TCHAR deviceName[1024];
+        DWORD requiredSize = 0;
+        if (SetupDiGetDeviceRegistryProperty(deviceInfoSet, &deviceInfoData, SPDRP_DEVICEDESC, NULL, 
+                                             (PBYTE)deviceName, sizeof(deviceName), &requiredSize)) {
+            QString deviceNameStr = QString::fromWCharArray(deviceName);
+
+            // Проверяем, является ли устройство мышью, клавиатурой или HID устройством
+            if (deviceNameStr.contains("Mouse", Qt::CaseInsensitive)) {
+                mouseList->addItem(deviceNameStr);
+            } else if (deviceNameStr.contains("Keyboard", Qt::CaseInsensitive)) {
+                keyboardList->addItem(deviceNameStr);
+            } else if (deviceNameStr.contains("HID", Qt::CaseInsensitive)) {
+                hidList->addItem(deviceNameStr);
+            }
+        }
+    }
+
+    SetupDiDestroyDeviceInfoList(deviceInfoSet);
+#endif
 }

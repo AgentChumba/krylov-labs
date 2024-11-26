@@ -43,7 +43,7 @@ void Tab3Widget::onSearchButtonClicked()
     resultOutput->clear();
     QString sectionName = sectionInput->text();
     if (sectionName.isEmpty()) {
-        resultOutput->setText("Пожалуйста, введите имя раздела.");
+        resultOutput->setText("Ошибка! Пожалуйста, введите имя раздела.");
         return;
     }
 
@@ -53,21 +53,19 @@ void Tab3Widget::onSearchButtonClicked()
                             0, KEY_READ, &hKey);
 
     if (openRes == ERROR_SUCCESS) {
-    resultOutput->setText("Драйвер найден в реестре!");
+        DWORD bufferSize = 1024;
+        wchar_t buffer[1024];
+        DWORD dwType = 0;
 
-    DWORD bufferSize = 1024;
-    wchar_t buffer[1024];
-    DWORD dwType = 0;
+        LONG queryRes = RegQueryValueEx(hKey, L"ImagePath", NULL, &dwType, (LPBYTE)buffer, &bufferSize);
+        if (queryRes == ERROR_SUCCESS) {
+            QString driverPath = QString::fromWCharArray(buffer);
+            resultOutput->append("Путь к драйверу: " + driverPath);
+        } else {
+            resultOutput->append("Не удалось получить путь к драйверу.");
+        }
 
-    LONG queryRes = RegQueryValueEx(hKey, L"ImagePath", NULL, &dwType, (LPBYTE)buffer, &bufferSize);
-    if (queryRes == ERROR_SUCCESS) {
-        QString driverPath = QString::fromWCharArray(buffer);
-        resultOutput->append("Путь к драйверу: " + driverPath);
-    } else {
-        resultOutput->append("Не удалось получить путь к драйверу.");
-    }
-
-    RegCloseKey(hKey);
+        RegCloseKey(hKey);
     } else {
         resultOutput->setText("Ошибка: не удалось найти драйвер в реестре.");
     }
