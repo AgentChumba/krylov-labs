@@ -42,7 +42,7 @@ void Tab3Widget::onSearchButtonClicked()
 #ifdef Q_OS_WIN
     QString sectionName = sectionInput->text();
     if (sectionName.isEmpty()) {
-        resultOutput->setText("Ошибка! Пожалуйста, введите имя раздела.");
+        resultOutput->setText("Пожалуйста, введите имя раздела.");
         return;
     }
 
@@ -52,30 +52,32 @@ void Tab3Widget::onSearchButtonClicked()
                             0, KEY_READ, &hKey);
 
     if (openRes == ERROR_SUCCESS) {
-        DWORD bufferSize = 1024;
-        char buffer[1024];
-        DWORD dwType = 0;
+    resultOutput->setText("Драйвер найден в реестре!");
 
-        LONG queryRes = RegQueryValueEx(hKey, L"ImagePath", NULL, &dwType, (LPBYTE)buffer, &bufferSize);
-        if (queryRes == ERROR_SUCCESS) {
-            QString driverPath = QString::fromStdString(buffer);
-            resultOutput->append("\nПуть: " + driverPath);
-        } else {
-            resultOutput->append("\nНе удалось получить путь.");
-        }
+    DWORD bufferSize = 1024;
+    wchar_t buffer[1024];
+    DWORD dwType = 0;
 
-        bufferSize = 1024;
-        queryRes = RegQueryValueEx(hKey, L"DisplayName", NULL, &dwType, (LPBYTE)buffer, &bufferSize);
-        if (queryRes == ERROR_SUCCESS) {
-            QString driverDescription = QString::fromStdString(buffer);
-            resultOutput->append("\nПодробные сведения: " + driverDescription);
-        } else {
-            resultOutput->append("\nНе удалось получить подробные сведения.");
-        }
-
-        RegCloseKey(hKey);
+    LONG queryRes = RegQueryValueEx(hKey, L"ImagePath", NULL, &dwType, (LPBYTE)buffer, &bufferSize);
+    if (queryRes == ERROR_SUCCESS) {
+        QString driverPath = QString::fromWCharArray(buffer);
+        resultOutput->append("\nПуть к драйверу: " + driverPath);
     } else {
-        resultOutput->setText("Ошибка! Не удалось найти драйвер в реестре.");
+        resultOutput->append("\nНе удалось получить путь к драйверу.");
+    }
+
+    bufferSize = 1024;
+    queryRes = RegQueryValueEx(hKey, L"DisplayName", NULL, &dwType, (LPBYTE)buffer, &bufferSize);
+    if (queryRes == ERROR_SUCCESS) {
+        QString driverDescription = QString::fromWCharArray(buffer);
+        resultOutput->append("\nОписание драйвера: " + driverDescription);
+    } else {
+        resultOutput->append("\nНе удалось получить описание драйвера.");
+    }
+
+    RegCloseKey(hKey);
+    } else {
+        resultOutput->setText("Ошибка: не удалось найти драйвер в реестре.");
     }
 #endif
 
