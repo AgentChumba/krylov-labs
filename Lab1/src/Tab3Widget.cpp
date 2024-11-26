@@ -40,55 +40,24 @@ Tab3Widget::Tab3Widget(QWidget *parent)
 void Tab3Widget::onSearchButtonClicked()
 {
 #ifdef Q_OS_WIN
-    QString section = sectionInput->text();
-    if (section.isEmpty()) {
+    QString searchTerm = sectionInput->text();
+    if (searchTerm.isEmpty()) {
         resultOutput->setText("Ошибка: поле 'Имя раздела' не может быть пустым.");
         return;
     }
 
-    HKEY hKey;
-    LONG result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, section.toStdWString().c_str(), 0, KEY_READ, &hKey);
-    if (result != ERROR_SUCCESS) {
-        resultOutput->setText("Ошибка: не удалось открыть указанный раздел реестра.");
-        return;
+    QString resultText = "Поиск результатов:\n\n";
+
+    // Начинаем поиск с корня HKEY_LOCAL_MACHINE
+    HKEY hKey = HKEY_LOCAL_MACHINE;
+    searchRegistry(hKey, searchTerm, resultText); // Поиск в текущем ключе
+    searchRegistryInSubKeys(hKey, searchTerm, resultText); // Поиск во всех подкаталогах
+
+    if (resultText == "Поиск результатов:\n\n") {
+        resultOutput->setText("Ничего не найдено.");
+    } else {
+        resultOutput->setText(resultText);
     }
-
-    QString resultText = QString("Раздел реестра: HKEY_LOCAL_MACHINE\\%1\n\n").arg(section);
-    TCHAR valueName[256];
-    BYTE data[256];
-    DWORD valueNameSize, dataSize, type;
-    DWORD index = 0;
-
-    while (true) {
-        valueNameSize = 256;
-        dataSize = 256;
-        result = RegEnumValue(hKey, index, valueName, &valueNameSize, nullptr, &type, data, &dataSize);
-        if (result == ERROR_NO_MORE_ITEMS) break;
-        if (result != ERROR_SUCCESS) {
-            resultText += QString("Ошибка при чтении значения #%1\n").arg(index);
-            continue;
-        }
-
-        QString valueString;
-        if (type == REG_SZ || type == REG_EXPAND_SZ) {
-            valueString = QString::fromWCharArray(reinterpret_cast<wchar_t *>(data));
-        } else if (type == REG_DWORD) {
-            DWORD value = *reinterpret_cast<DWORD *>(data);
-            valueString = QString::number(value);
-        } else {
-            valueString = QString("Данные в неподдерживаемом формате (тип %1)").arg(type);
-        }
-
-        resultText += QString("Ключ: %1, Значение: %2\n")
-                      .arg(QString::fromWCharArray(valueName))
-                      .arg(valueString);
-        ++index;
-    }
-
-    RegCloseKey(hKey);
-
-    if (resultText == "Раздел реестра: HKEY_LOCAL_MACHINE\\%1\n\n") resultOutput->setText("Раздел пуст или не содержит значений.");
-    else resultOutput->setText(resultText);
 #endif
 
 #ifdef Q_OS_LINUX
@@ -120,3 +89,69 @@ void Tab3Widget::onSearchButtonClicked()
     else resultOutput->setText(resultText);
 #endif
 }
+
+#ifdef Q_OS_WIN
+void searchRegistry(HKEY hKey, const QString &searchTerm, QString &resultText, DWORD index = 0)
+{
+    TCHAR valueName[256];
+    BYTE data[256];
+    DWORD valueNameSize, dataSize, type;
+    
+    while (true) {
+        valueNameSize = 256;
+        dataSize = 256;
+        LONG result = RegEnumValue(hKey, index, valueName, &valueNameSize, nullptr, &type, data, &dataSize);
+        if (result == ERROR_NO_MORE_ITEMS) break;
+        if (result != ERROR_SUCCESS) {
+            resultText += QString("Ошибка при чтении значения #%1\n").arg(index);
+            continue;
+        }
+
+        QString valueString;
+        if (type == REG_SZ || type == REG_EXPAND_SZ) {
+            valueString = QString::fromWCharArray(reinterpret_cast<wchar_t *>(data));
+        } else if (type == REG_DWORD) {
+            DWORD value = *reinterpret_cast<DWORD *>(data);
+            valueString = QString::number(value);
+        } else {
+            valueString = QString("Данные в неподдерживаемом формате (тип %1)").arg(type);
+        }
+
+        // Проверяем на совпадение с поисковым запросом
+        if (QString::fromWCharArray(valueName).contains(searchTerm, Qt::CaseInsensitive) || 
+            valueString.contains(searchTerm, Qt::CaseInsensitive)) {
+            resultText += QString("Ключ: %1, Значение: %2\n")
+                              .arg(QString::fromWCharArray(valueName))
+                              .arg(valueString);
+        }
+        ++index;
+    }
+}
+
+void searchRegistryInSubKeys(HKEY hKey, const QString &searchTerm, QString &resultText)
+{
+    TCHAR subKey[256];
+    DWORD subKeySize;
+    LONG result;
+    DWORD index = 0;
+
+    while (true) {
+        subKeySize = 256;
+        result = RegEnumKeyEx(hKey, index, subKey, &subKeySize, nullptr, nullptr, nullptr, nullptr);
+        if (result == ERROR_NO_MORE_ITEMS) break;
+        if (result != ERROR_SUCCESS) {
+            resultText += QString("Ошибка при чтении подкаталога #%1\n").arg(index);
+            continue;
+        }
+
+        HKEY hSubKey;
+        result = RegOpenKeyEx(hKey, subKey, 0, KEY_READ, &hSubKey);
+        if (result == ERROR_SUCCESS) {
+            // Рекурсивно ищем в текущем подкаталоге
+            searchRegistry(hSubKey, searchTerm, resultText);
+            RegCloseKey(hSubKey);
+        }
+        ++index;
+    }
+}
+#endif
