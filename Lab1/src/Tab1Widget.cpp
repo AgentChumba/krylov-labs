@@ -81,11 +81,16 @@ Tab1Widget::Tab1Widget(QWidget *parent)
     QPushButton *initButton = new QPushButton("Инициализация порта", initGroup);
     connect(initButton, &QPushButton::clicked, this, &Tab1Widget::onInitPortClicked);
 
+    QPushButton *disconnectButton = new QPushButton("Отключиться от порта", initGroup);
+    connect(disconnectButton, &QPushButton::clicked, this, &Tab1Widget::onDisconnectPortClicked);
+
+
     initHLayout->addWidget(portGroup);
     initHLayout->addSpacing(60);
     initHLayout->addWidget(paramGroup);
     initVLayout->addLayout(initHLayout);
     initVLayout->addWidget(initButton);
+    initVLayout->addWidget(disconnectButton);
     initVLayout->addStretch();
 
     QGroupBox *controlGroup = new QGroupBox("Посылка сигналов управления", this);
@@ -153,7 +158,13 @@ void Tab1Widget::onInitPortClicked()
         }
     #endif
 
-    if (serialPort == nullptr) serialPort = new QSerialPort(selectedPort, this);
+    if (serialPort) {
+        if (serialPort->isOpen()) serialPort->close();
+        delete serialPort;
+        serialPort = nullptr;
+    }
+
+    serialPort = new QSerialPort(selectedPort, this);
 
     serialPort->setBaudRate(speedCombo->currentText().toInt());
     serialPort->setDataBits(static_cast<QSerialPort::DataBits>(dataBitsCombo->currentText().toInt()));
@@ -195,5 +206,15 @@ void Tab1Widget::onSendSignal()
         }
     } else {
         resultField->setText("Порт не открыт или не выбран!");
+    }
+}
+
+void Tab1Widget::onDisconnectPortClicked() {
+    if (serialPort && serialPort->isOpen()) {
+        serialPort->close();
+        qDebug("Порт успешно отключён.");
+        resultField->setText("Порт отключён.");
+    } else {
+        resultField->setText("Порт уже закрыт или не инициализирован.");
     }
 }

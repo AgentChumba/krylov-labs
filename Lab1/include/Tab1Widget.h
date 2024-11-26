@@ -42,6 +42,7 @@ private:
 
 private slots:
     void onInitPortClicked();
+    void onDisconnectPortClicked();
     void onSendSignal();
 };
 
