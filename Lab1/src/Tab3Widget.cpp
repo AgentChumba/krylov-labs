@@ -69,9 +69,19 @@ void Tab3Widget::onSearchButtonClicked()
             continue;
         }
 
+        QString valueString;
+        if (type == REG_SZ || type == REG_EXPAND_SZ) {
+            valueString = QString::fromWCharArray(reinterpret_cast<wchar_t *>(data));
+        } else if (type == REG_DWORD) {
+            DWORD value = *reinterpret_cast<DWORD *>(data);
+            valueString = QString::number(value);
+        } else {
+            valueString = QString("Данные в неподдерживаемом формате (тип %1)").arg(type);
+        }
+
         resultText += QString("Ключ: %1, Значение: %2\n")
-                          .arg(QString::fromWCharArray(valueName))
-                          .arg(QString::fromUtf8(reinterpret_cast<char *>(data), dataSize));
+                      .arg(QString::fromWCharArray(valueName))
+                      .arg(valueString);
         ++index;
     }
 

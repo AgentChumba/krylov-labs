@@ -41,6 +41,8 @@ void Tab2Widget::onStartClicked() {
 }
 
 void Tab2Widget::populateUsbDevices() {
+
+#ifdef Q_OS_LINUX
     libusb_context *ctx = nullptr;
     libusb_device **deviceList = nullptr;
     ssize_t deviceCount;
@@ -123,4 +125,10 @@ void Tab2Widget::populateUsbDevices() {
 
     libusb_free_device_list(deviceList, 1);
     libusb_exit(ctx);
+#endif
+
+#ifdef Q_OS_WIN
+    //
+#endif
+
 }

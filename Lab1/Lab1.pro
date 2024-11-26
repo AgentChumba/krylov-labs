@@ -1,6 +1,9 @@
 QT       += core gui widgets serialport
 CONFIG   += c++17
-LIBS     += -lusb-1.0
+
+unix {
+    LIBS     += -lusb-1.0
+}
 
 TARGET = Lab1
 TEMPLATE = app

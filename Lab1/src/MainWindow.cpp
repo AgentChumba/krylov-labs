@@ -7,7 +7,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
       centralWidget(new QWidget(this)),
       mainLayout(new QVBoxLayout),
-      title1(new QLabel("\tЛабораторная работа 1", this)),
+      title1(new QLabel("Лабораторная работа 1", this)),
       tabWidget(new QTabWidget(this)) {
 
     // Настройка заголовков

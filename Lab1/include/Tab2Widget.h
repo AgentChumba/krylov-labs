@@ -8,7 +8,9 @@
 #include <QPushButton>
 #include <QListWidget>
 
+#ifdef Q_OS_LINUX
 #include <libusb-1.0/libusb.h>
+#endif
 
 class Tab2Widget : public QWidget {
     Q_OBJECT
