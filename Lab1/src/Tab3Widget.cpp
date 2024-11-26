@@ -40,6 +40,7 @@ Tab3Widget::Tab3Widget(QWidget *parent)
 void Tab3Widget::onSearchButtonClicked()
 {
 #ifdef Q_OS_WIN
+    resultOutput->clear();
     QString sectionName = sectionInput->text();
     if (sectionName.isEmpty()) {
         resultOutput->setText("Пожалуйста, введите имя раздела.");
@@ -61,18 +62,9 @@ void Tab3Widget::onSearchButtonClicked()
     LONG queryRes = RegQueryValueEx(hKey, L"ImagePath", NULL, &dwType, (LPBYTE)buffer, &bufferSize);
     if (queryRes == ERROR_SUCCESS) {
         QString driverPath = QString::fromWCharArray(buffer);
-        resultOutput->append("\nПуть к драйверу: " + driverPath);
+        resultOutput->append("Путь к драйверу: " + driverPath);
     } else {
-        resultOutput->append("\nНе удалось получить путь к драйверу.");
-    }
-
-    bufferSize = 1024;
-    queryRes = RegQueryValueEx(hKey, L"DisplayName", NULL, &dwType, (LPBYTE)buffer, &bufferSize);
-    if (queryRes == ERROR_SUCCESS) {
-        QString driverDescription = QString::fromWCharArray(buffer);
-        resultOutput->append("\nОписание драйвера: " + driverDescription);
-    } else {
-        resultOutput->append("\nНе удалось получить описание драйвера.");
+        resultOutput->append("Не удалось получить путь к драйверу.");
     }
 
     RegCloseKey(hKey);
@@ -82,6 +74,7 @@ void Tab3Widget::onSearchButtonClicked()
 #endif
 
 #ifdef Q_OS_LINUX
+    resultOutput->clear();
     QString moduleName = sectionInput->text();
     if (moduleName.isEmpty()) {
         resultOutput->setText("Ошибка! Пожалуйста, введите имя раздела.");
