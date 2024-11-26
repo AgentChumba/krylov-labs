@@ -10,15 +10,12 @@ MainWindow::MainWindow(QWidget *parent)
       title1(new QLabel("Лабораторная работа 1", this)),
       tabWidget(new QTabWidget(this)) {
 
-    // Настройка заголовков
     title1->setStyleSheet("font-size: 24px; font-weight: bold; text-align: center;");
     
-    // Добавление вкладок через отдельные классы
     tabWidget->addTab(new Tab1Widget(this), "1");
     tabWidget->addTab(new Tab2Widget(this), "2");
     tabWidget->addTab(new Tab3Widget(this), "3");
 
-    // Компоновка
     mainLayout->addWidget(title1);
     title1->setAlignment(Qt::AlignLeft);
     mainLayout->addWidget(tabWidget);
@@ -26,7 +23,6 @@ MainWindow::MainWindow(QWidget *parent)
     centralWidget->setLayout(mainLayout);
     setCentralWidget(centralWidget);
 
-    // Настройка главного окна
     setWindowTitle("Лабораторная 1");
     resize(800, 600);
 }

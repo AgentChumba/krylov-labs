@@ -24,8 +24,8 @@ Tab2Widget::Tab2Widget(QWidget *parent)
     rightLayout->addWidget(hidList);
 
     QHBoxLayout *mainLayout = new QHBoxLayout(this);
-    mainLayout->addLayout(leftLayout, 1);  // Левая часть (1 часть)
-    mainLayout->addLayout(rightLayout, 3); // Правая часть (3 части)
+    mainLayout->addLayout(leftLayout, 1);
+    mainLayout->addLayout(rightLayout, 3);
 
     setLayout(mainLayout);
 

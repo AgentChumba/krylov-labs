@@ -40,29 +40,43 @@ Tab3Widget::Tab3Widget(QWidget *parent)
 void Tab3Widget::onSearchButtonClicked()
 {
 #ifdef Q_OS_WIN
-     QString sectionName = sectionInput->text();
+    QString sectionName = sectionInput->text();
     if (sectionName.isEmpty()) {
-        resultOutput->setText("Пожалуйста, введите имя раздела.");
+        resultOutput->setText("Ошибка! Пожалуйста, введите имя раздела.");
         return;
     }
 
-    HKEY hKey;
-    LONG openRes = RegOpenKeyEx(HKEY_LOCAL_MACHINE, 
-                                ("SYSTEM\\ControlSet001\\Services\\" + sectionName).toStdWString().c_str(),
-                                0, KEY_READ, &hKey);
+    DWORD bufferSize = 1024;
+    char buffer[1024];
+    DWORD dwType = 0;
 
-    if (openRes == ERROR_SUCCESS) {
-        resultOutput->setText("Драйвер найден в реестре!");
-        RegCloseKey(hKey);
+    LONG queryRes = RegQueryValueEx(hKey, L"ImagePath", NULL, &dwType, (LPBYTE)buffer, &bufferSize);
+    if (queryRes == ERROR_SUCCESS) {
+        QString driverPath = QString::fromStdString(buffer);
+        resultOutput->append("\nПуть: " + driverPath);
     } else {
-        resultOutput->setText("Ошибка: не удалось найти драйвер в реестре.");
+        resultOutput->append("\nНе удалось получить путь.");
+    }
+
+    bufferSize = 1024;
+    queryRes = RegQueryValueEx(hKey, L"DisplayName", NULL, &dwType, (LPBYTE)buffer, &bufferSize);
+    if (queryRes == ERROR_SUCCESS) {
+        QString driverDescription = QString::fromStdString(buffer);
+        resultOutput->append("\nПодробные сведения: " + driverDescription);
+    } else {
+        resultOutput->append("\nНе удалось получить подробные сведения.");
+    }
+
+    RegCloseKey(hKey);
+    } else {
+        resultOutput->setText("Ошибка! Не удалось найти драйвер в реестре.");
     }
 #endif
 
 #ifdef Q_OS_LINUX
     QString moduleName = sectionInput->text();
     if (moduleName.isEmpty()) {
-        resultOutput->setText("Ошибка: поле 'Имя раздела' не может быть пустым.");
+        resultOutput->setText("Ошибка! Пожалуйста, введите имя раздела.");
         return;
     }
 
