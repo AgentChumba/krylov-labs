@@ -40,20 +40,46 @@ Tab3Widget::Tab3Widget(QWidget *parent)
 void Tab3Widget::onSearchButtonClicked()
 {
 #ifdef Q_OS_WIN
-    QString section = sectionInput->text();
-    if (section.isEmpty()) {
-        resultOutput->setText("Ошибка: поле 'Имя раздела' не может быть пустым.");
+    HKEY hKey;
+    long lRes;
+    TCHAR szSubKey[MAX_PATH];
+    DWORD dwIndex = 0;
+    DWORD dwSize = MAX_PATH;
+
+    // Открываем реестр для поиска (например, в разделе HKEY_LOCAL_MACHINE)
+    lRes = RegOpenKeyEx(HKEY_LOCAL_MACHINE, TEXT("SYSTEM\\ControlSet001\\Services"), 0, KEY_READ, &hKey);
+    
+    if (lRes != ERROR_SUCCESS) {
+        cout << "Не удалось открыть реестр!" << endl;
         return;
     }
 
-    HKEY hKey;
-    LONG result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, section.toStdWString().c_str(), 0, KEY_READ, &hKey);
-    if (result == ERROR_SUCCESS) {
-        resultOutput->setText("Раздел найден!");
-        RegCloseKey(hKey);
-    } else {
-        resultOutput->setText("Ошибка: не удалось открыть указанный раздел реестра.");
+    // Проходим по всем подкаталогам
+    while (true) {
+        lRes = RegEnumKeyEx(hKey, dwIndex, szSubKey, &dwSize, NULL, NULL, NULL, NULL);
+        
+        if (lRes == ERROR_NO_MORE_ITEMS) {
+            // Нет больше ключей
+            break;
+        }
+        
+        if (lRes == ERROR_SUCCESS) {
+            // Проверяем, соответствует ли подкаталог нашему запросу
+            if (searchKey == szSubKey) {
+                cout << "Найдено: " << szSubKey << endl;
+                RegCloseKey(hKey);
+                return;
+            }
+        }
+        
+        // Увеличиваем индекс и продолжаем искать
+        dwIndex++;
+        dwSize = MAX_PATH;
     }
+
+    // Если не нашли
+    cout << "Не найдено!" << endl;
+    RegCloseKey(hKey);
 #endif
 
 #ifdef Q_OS_LINUX
