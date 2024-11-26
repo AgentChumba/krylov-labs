@@ -46,28 +46,34 @@ void Tab3Widget::onSearchButtonClicked()
         return;
     }
 
-    DWORD bufferSize = 1024;
-    char buffer[1024];
-    DWORD dwType = 0;
+    HKEY hKey;
+    LONG openRes = RegOpenKeyEx(HKEY_LOCAL_MACHINE, 
+                            ("SYSTEM\\ControlSet001\\Services\\" + sectionName).toStdWString().c_str(),
+                            0, KEY_READ, &hKey);
 
-    LONG queryRes = RegQueryValueEx(hKey, L"ImagePath", NULL, &dwType, (LPBYTE)buffer, &bufferSize);
-    if (queryRes == ERROR_SUCCESS) {
-        QString driverPath = QString::fromStdString(buffer);
-        resultOutput->append("\nПуть: " + driverPath);
-    } else {
-        resultOutput->append("\nНе удалось получить путь.");
-    }
+    if (openRes == ERROR_SUCCESS) {
+        DWORD bufferSize = 1024;
+        char buffer[1024];
+        DWORD dwType = 0;
 
-    bufferSize = 1024;
-    queryRes = RegQueryValueEx(hKey, L"DisplayName", NULL, &dwType, (LPBYTE)buffer, &bufferSize);
-    if (queryRes == ERROR_SUCCESS) {
-        QString driverDescription = QString::fromStdString(buffer);
-        resultOutput->append("\nПодробные сведения: " + driverDescription);
-    } else {
-        resultOutput->append("\nНе удалось получить подробные сведения.");
-    }
+        LONG queryRes = RegQueryValueEx(hKey, L"ImagePath", NULL, &dwType, (LPBYTE)buffer, &bufferSize);
+        if (queryRes == ERROR_SUCCESS) {
+            QString driverPath = QString::fromStdString(buffer);
+            resultOutput->append("\nПуть: " + driverPath);
+        } else {
+            resultOutput->append("\nНе удалось получить путь.");
+        }
 
-    RegCloseKey(hKey);
+        bufferSize = 1024;
+        queryRes = RegQueryValueEx(hKey, L"DisplayName", NULL, &dwType, (LPBYTE)buffer, &bufferSize);
+        if (queryRes == ERROR_SUCCESS) {
+            QString driverDescription = QString::fromStdString(buffer);
+            resultOutput->append("\nПодробные сведения: " + driverDescription);
+        } else {
+            resultOutput->append("\nНе удалось получить подробные сведения.");
+        }
+
+        RegCloseKey(hKey);
     } else {
         resultOutput->setText("Ошибка! Не удалось найти драйвер в реестре.");
     }
