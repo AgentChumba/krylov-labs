@@ -4,9 +4,11 @@
 #include <QWidget>
 #include <QLineEdit>
 #include <QPushButton>
-#include <QSpinBox>
+#include <QDoubleSpinBox>
 #include <QLabel>
 #include <QFileDialog>
+#include <QComboBox>
+#include <QMap>
 
 class Tab1Widget : public QWidget {
     Q_OBJECT
@@ -17,20 +19,30 @@ public:
 
 private slots:
     void browseLibraryPath();
+    void loadLibrary();
 
 private:
     QLineEdit *libraryNameEdit;
-    QLineEdit *functionNameEdit;
     QLineEdit *resultEdit;
-    QSpinBox *paramXSpinBox;
-    QSpinBox *paramYSpinBox;
+    QDoubleSpinBox *paramXSpinBox;
+    QDoubleSpinBox *paramYSpinBox;
+    QComboBox *functionNameBox;
 
-    QPushButton *checkLibraryButton;
-    QPushButton *checkFunctionButton;
+    QPushButton *loadLibraryButton;
     QPushButton *invokeFunctionButton;
     QPushButton *browseButton;
 
+    QMap<QString, QString> functionNameMap;
+
+#ifdef Q_OS_WIN
+    HMODULE libraryHandle;
+#else
+    void *libraryHandle;
+#endif
+
     void setupUi();
+    void clearFunctionList();
+    void invokeFunction();
 };
 
 #endif // TAB1WIDGET_H
