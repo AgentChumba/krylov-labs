@@ -19,6 +19,9 @@ public:
     ~Tab1Widget();
 
 private:
+    qint64 bytesSent = 0;
+    qint64 bytesReceived = 0;
+
     QRadioButton *com1Button;
     QRadioButton *com2Button;
     QRadioButton *com3Button;
@@ -30,6 +33,7 @@ private:
     QPushButton *sendSignalButton;
 
     QLineEdit *resultField;
+    QLineEdit *bytesCountLabel;
     QLineEdit *sensorLineEdit;
     QLineEdit *registerLineEdit;
 
@@ -44,6 +48,7 @@ private slots:
     void onInitPortClicked();
     void onDisconnectPortClicked();
     void onSendSignal();
+    void onDataReceived();
 };
 
 #endif // TAB1WIDGET_H

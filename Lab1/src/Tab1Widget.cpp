@@ -118,10 +118,17 @@ Tab1Widget::Tab1Widget(QWidget *parent)
     resultLayout->addWidget(resultLabel);
     resultLayout->addWidget(resultField);
 
+    QHBoxLayout *bytesCountLayout = new QHBoxLayout();
+    QLabel *bytesCountTextLabel = new QLabel("Всего байт отправлено/получено:", controlGroup);
+    bytesCountLabel = new QLineEdit("0 / 0", controlGroup);
+    bytesCountLayout->addWidget(bytesCountTextLabel);
+    bytesCountLayout->addWidget(bytesCountLabel);
+
     controlLayout->addLayout(sensorLayout);
     controlLayout->addLayout(registerLayout);
     controlLayout->addWidget(sendSignalButton);
     controlLayout->addLayout(resultLayout);
+    controlLayout->addLayout(bytesCountLayout);
     controlLayout->addStretch();
 
     mainLayout->addWidget(initGroup);
@@ -179,6 +186,7 @@ void Tab1Widget::onInitPortClicked()
     
     qDebug(QString("Порт %1 успешно инициализирован!").arg(selectedPort).toUtf8());
     resultField->setText("Порт " + selectedPort + " успешно инициализирован!");
+    connect(serialPort, &QSerialPort::readyRead, this, &Tab1Widget::onDataReceived);
 }
 
 void Tab1Widget::onSendSignal()
@@ -203,9 +211,23 @@ void Tab1Widget::onSendSignal()
         } else {
             qDebug(QString("Сигнал отправлен, количество байт: %1").arg(bytesWritten).toUtf8());
             resultField->setText("Сигнал успешно отправлен!");
+            if (bytesWritten > 0) {
+                bytesSent += bytesWritten;
+                bytesCountLabel->setText(QString("%1 / %2").arg(bytesSent).arg(bytesReceived));
+            }
         }
     } else {
         resultField->setText("Порт не открыт или не выбран!");
+    }
+}
+
+void Tab1Widget::onDataReceived() {
+    if (serialPort && serialPort->isOpen()) {
+        QByteArray data = serialPort->readAll();
+        bytesReceived += data.size();
+        bytesCountLabel->setText(QString("%1 / %2").arg(bytesSent).arg(bytesReceived));
+        resultField->setText("Получено байт " + QString::number(bytesReceived));
+        qDebug(QString("Получено данных: %1").arg(bytesReceived).toUtf8());
     }
 }
 
@@ -214,6 +236,9 @@ void Tab1Widget::onDisconnectPortClicked() {
         serialPort->close();
         qDebug("Порт успешно отключён.");
         resultField->setText("Порт отключён.");
+        bytesSent = 0;
+        bytesReceived = 0;
+        bytesCountLabel->setText(QString("%1 / %2").arg(bytesSent).arg(bytesReceived));
     } else {
         resultField->setText("Порт уже закрыт или не инициализирован.");
     }
