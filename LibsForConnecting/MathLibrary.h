@@ -11,12 +11,13 @@
     #define MATHLIBRARY_API
 #endif
 
-// Пространство имён MathLibrary
 namespace MathLibrary {
-    MATHLIBRARY_API double add(double a, double b);
-    MATHLIBRARY_API double subtract(double a, double b);
-    MATHLIBRARY_API double multiply(double a, double b);
-    MATHLIBRARY_API double divide(double a, double b);
+    extern "C" {
+        MATHLIBRARY_API double add(double a, double b);
+        MATHLIBRARY_API double subtract(double a, double b);
+        MATHLIBRARY_API double multiply(double a, double b);
+        MATHLIBRARY_API double divide(double a, double b);
+    }
 }
 
 #endif // MATHLIBRARY_H

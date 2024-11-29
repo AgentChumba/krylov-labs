@@ -15,11 +15,11 @@ Tab2Widget::Tab2Widget(QWidget *parent)
     btnFetchData = new QPushButton("Получить данные");
     btnStop = new QPushButton("Стоп");
 
-    plot = new QCustomPlot();
-    plot->addGraph();
-    plot->xAxis->setLabel("Время");
-    plot->yAxis->setLabel("Амплитуда");
-    plot->setMinimumSize(400, 400);
+    // plot = new QCustomPlot(this);
+    // plot->addGraph();
+    // plot->xAxis->setLabel("Время");
+    // plot->yAxis->setLabel("Амплитуда");
+    // plot->setMinimumSize(400, 400);
 
     QHBoxLayout *rateLayout = new QHBoxLayout();
     rateLayout->addWidget(labelSamplingRate);
@@ -35,10 +35,9 @@ Tab2Widget::Tab2Widget(QWidget *parent)
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->addLayout(rateLayout);
     mainLayout->addLayout(buttonLayout);
-    mainLayout->addWidget(plot);
+    // mainLayout->addWidget(plot);
     mainLayout->addStretch();
 
-    // Связь сигналов и слотов
     connect(btnInitCom, &QPushButton::clicked, this, &Tab2Widget::initComSubsystem);
     connect(btnInitDevice, &QPushButton::clicked, this, &Tab2Widget::initDevice);
     connect(btnFetchData, &QPushButton::clicked, this, &Tab2Widget::fetchData);
@@ -58,13 +57,13 @@ void Tab2Widget::initDevice()
 void Tab2Widget::fetchData()
 {
     qDebug("Получение данных с устройства...");
-    QVector<double> x(101), y(101);
-    for (int i = 0; i < 101; ++i) {
-        x[i] = i / 10.0;
-        y[i] = qSin(x[i]);
-    }
-    plot->graph(0)->setData(x, y);
-    plot->replot();
+    // QVector<double> x(101), y(101);
+    // for (int i = 0; i < 101; ++i) {
+    //     x[i] = i / 10.0;
+    //     y[i] = qSin(x[i]);
+    // }
+    // plot->graph(0)->setData(x, y);
+    // plot->replot();
 }
 
 void Tab2Widget::stopFetching()

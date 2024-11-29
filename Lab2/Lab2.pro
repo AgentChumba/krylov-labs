@@ -1,8 +1,14 @@
 QT       += core gui widgets
 CONFIG   += c++17
 
+unix: {
 INCLUDEPATH += /usr/include/qcustomplot
 LIBS += -L/usr/lib -lqcustomplot
+}
+
+win32: {
+
+}
 
 TARGET = Lab2
 TEMPLATE = app

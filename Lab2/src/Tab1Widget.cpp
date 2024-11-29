@@ -1,11 +1,11 @@
 #include "../include/Tab1Widget.h"
 #include <QHBoxLayout>
+#include <QProcess>
 
 #ifdef Q_OS_WIN
 #include <windows.h>
 #else
 #include <dlfcn.h>
-#include <QProcess>
 #include <QStringList>
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
@@ -124,11 +124,9 @@ void Tab1Widget::loadLibrary() {
 #ifdef Q_OS_WIN
     libraryHandle = LoadLibraryW(reinterpret_cast<LPCWSTR>(libraryPath.utf16()));
     if (!libraryHandle) {
-        resultEdit->setText(Ошибка загрузки библиотеки!);
+        resultEdit->setText("Ошибка загрузки библиотеки!");
         return;
     }
-
-    QStringList functionNames;
 
     QProcess dumpbinProcess;
     dumpbinProcess.start("dumpbin", QStringList() << "/exports" << libraryPath);
@@ -138,14 +136,14 @@ void Tab1Widget::loadLibrary() {
     }
 
     QString dumpbinOutput = dumpbinProcess.readAllStandardOutput();
-    QRegularExpression regex(R"(\s+(\w+)\s+0x[0-9a-fA-F]+)");
+    QRegularExpression regex(R"(\d+\s+\d+\s+[0-9a-fA-F]+\s+([a-zA-Z_][\w@]*)\s*(=.*)?)");
     QRegularExpressionMatchIterator it = regex.globalMatch(dumpbinOutput);
     bool found = false;
-    
+
     while (it.hasNext()) {
         QRegularExpressionMatch match = it.next();
         if (match.hasMatch()) {
-            QString functionName = match.captured(1);
+            QString functionName = match.captured(1).trimmed();
             functionNameBox->addItem(functionName);
             found = true;
         }
