@@ -1,5 +1,4 @@
 #include "../include/MainWindow.h"
-#include <stdio.h>
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     QWidget* centralWidget = new QWidget(this);
@@ -89,19 +88,24 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::initializeMath() {
-    const char* argv[] = { "-linkmode", "launch", "-linkname", "MathKernel" };
+
+#ifdef Q_OS_WIN
+    const char* argv[] = { "-linkmode", "launch", "-linkname", "MathKernel.exe"};
+#else
+    const char* argv[] = { "-linkmode", "launch", "-linkname", "MathKernel"};
+#endif
     int argc = sizeof(argv) / sizeof(argv[0]);
     int err;
 
     env = WSInitialize(NULL);
     if (!env) {
-        qWarning() << "Ошибка: не удалось инициализировать MathLink.";
+        debugEdit->setText("Ошибка: не удалось инициализировать MathLink.");
         return;
     }
 
     link = WSOpenArgcArgv(env, argc, (char**)argv, &err);
     if (!link || err != WSEOK) {
-        qWarning() << "Ошибка: не удалось подключиться к MathKernel. Код ошибки: " << err;
+        debugEdit->setText("Ошибка: не удалось подключиться к MathKernel.");
         return;
     }
 

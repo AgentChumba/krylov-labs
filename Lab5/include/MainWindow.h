@@ -2,12 +2,13 @@
 #define MAIN_WINDOW_H
 
 #include <QProcess>
-#include "wstp.h"
 
 #ifdef Q_OS_WIN
 #include <QCustomPlot/qcustomplot.h>
+#include <WSTP/wstp.h>
 #else
 #include <qcustomplot.h>
+#include "wstp.h"
 #endif
 
 class MainWindow : public QMainWindow {
