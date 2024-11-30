@@ -21,5 +21,8 @@ build/
 # Настройки Visual Studio Code
 .vscode/
 
+# Настройки Qt
+*.user
+
 # Временные файлы и резервные копии
 *.DS_Store
