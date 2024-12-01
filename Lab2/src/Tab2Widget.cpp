@@ -1,11 +1,18 @@
 #include "../include/Tab2Widget.h"
+
+#ifdef Q_OS_WIN
 #include <QDebug>
+#else
+#include <QLabel>
+#include <QVBoxLayout>
+#endif
 
 Tab2Widget::~Tab2Widget() {}
 
 Tab2Widget::Tab2Widget(QWidget *parent)
     : QWidget(parent) {
 
+#ifdef Q_OS_WIN
     QLabel *labelSamplingRate = new QLabel("Частота дискретизации:");
     comboSamplingRate = new QComboBox();
     comboSamplingRate->addItems({"1000 Hz", "2000 Hz", "5000 Hz", "10000 Hz"});
@@ -42,8 +49,17 @@ Tab2Widget::Tab2Widget(QWidget *parent)
     connect(btnInitDevice, &QPushButton::clicked, this, &Tab2Widget::initDevice);
     connect(btnFetchData, &QPushButton::clicked, this, &Tab2Widget::fetchData);
     connect(btnStop, &QPushButton::clicked, this, &Tab2Widget::stopFetching);
+#else
+    QLabel *title = new QLabel("Данная OS не поддерживается подключаемым ПО");
+    title->setStyleSheet("font-size: 24px; font-weight: bold; text-align: center;");
+    title->setAlignment(Qt::AlignCenter);
+
+    QVBoxLayout *mainLayout = new QVBoxLayout(this);
+    mainLayout->addWidget(title);
+#endif
 }
 
+#ifdef Q_OS_WIN
 void Tab2Widget::initComSubsystem()
 {
     qDebug("Инициализация COM подсистемы...");
@@ -70,3 +86,4 @@ void Tab2Widget::stopFetching()
 {
     qDebug("Останов получения данных.");
 }
+#endif

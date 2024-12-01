@@ -6,7 +6,7 @@
 #ifdef Q_OS_WIN
 #include <QCustomPlot/qcustomplot.h>
 #else
-#include <qcustomplot.h>
+#include <QWidget>
 #endif
 
 class Tab2Widget : public QWidget {
@@ -17,6 +17,7 @@ public:
     ~Tab2Widget();
 
 private slots:
+#ifdef Q_OS_WIN
     void initComSubsystem();
     void initDevice();
     void fetchData();
@@ -29,6 +30,7 @@ private:
     QPushButton *btnFetchData;
     QPushButton *btnStop;
     QCustomPlot *plot;
+#endif
 };
 
 #endif // TAB2WIDGET_H

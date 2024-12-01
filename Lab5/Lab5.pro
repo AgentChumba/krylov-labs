@@ -8,10 +8,10 @@ unix: {
 }
 
 win32: {
-    INCLUDEPATH +=  C:/Program Files/Wolfram Research/Mathematica/13.3/SystemFiles/Links/WSTP/DeveloperKit/Windows-x86-64/CompilerAdditions \
-                    C:/Qt/6.8.0/msvc2022_64/include/
-    LIBS += -LC:/Program Files/Wolfram Research/Mathematica/13.3/SystemFiles/Links/WSTP/DeveloperKit/Windows-x86-64/CompilerAdditions -lWSTP64i4 \
-            -LC:/Qt/6.8.0/msvc2022_64/lib -lqcustomplotd2
+    INCLUDEPATH += "C:/Program Files/Wolfram Research/Wolfram/14.1/SystemFiles/Links/WSTP/DeveloperKit/Windows-x86-64/CompilerAdditions" \
+                   "C:/Qt/6.8.0/msvc2022_64/include/"
+    LIBS += -L"C:/Program Files/Wolfram Research/Wolfram/14.1/SystemFiles/Links/WSTP/DeveloperKit/Windows-x86-64/CompilerAdditions" -lWSTP64i4 \
+            -L"C:/Qt/6.8.0/msvc2022_64/lib" -lqcustomplotd2
 }
 
 TARGET = Lab5

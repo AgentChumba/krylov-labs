@@ -5,7 +5,7 @@
 
 #ifdef Q_OS_WIN
 #include <QCustomPlot/qcustomplot.h>
-#include <WSTP/wstp.h>
+#include "wstp.h"
 #else
 #include <qcustomplot.h>
 #include "wstp.h"
