@@ -5,7 +5,9 @@ TEMPLATE = app
 
 CONFIG += c++17
 
-LIBS += -lQt5SerialPort
+unix: {
+    LIBS += -lQt5SerialPort
+}
 
 SOURCES += \
     src/main.cpp \
