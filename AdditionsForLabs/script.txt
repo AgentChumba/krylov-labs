@@ -1,0 +1,8 @@
+let resistor = 1   
+let cuvette = 0 
+loop cuvette = 0..1
+loop resistor = 1..2  
+experiment
+endloop
+endloop
+saveall
