@@ -102,7 +102,7 @@ void Interpreter::handleLoop(const std::string &line, const std::vector<std::str
         return;
     }
 
-    if (minPart > maxPart) {
+    if (min > max) {
         result += "Ошибка: Начальное значение цикла больше конечного.\n";
         return;
     }
