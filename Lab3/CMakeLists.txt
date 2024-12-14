@@ -10,7 +10,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 find_package(
-  Qt6
+  Qt5
   COMPONENTS Core Widgets Gui
   REQUIRED)
 
@@ -21,6 +21,6 @@ file(GLOB_RECURSE headers CONFIGURE_DEPENDS
      "${CMAKE_CURRENT_LIST_DIR}/include/*")
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/src/*")
 
-add_executable(lab_2 ${headers} ${sources})
+add_executable(lab_3 ${headers} ${sources})
 
-target_link_libraries(lab_2 PRIVATE usb-1.0 Qt::Core Qt::Widgets Qt::Gui)
+target_link_libraries(lab_3 PRIVATE usb-1.0 Qt::Core Qt::Widgets Qt::Gui)
