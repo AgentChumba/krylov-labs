@@ -22,6 +22,9 @@ private slots:
     void initDevice();
     void fetchData();
     void stopFetching();
+    void onTimeout();
+    void ShowImage();
+    void onComboSamplingRateChanged();
 
 private:
     QComboBox *comboSamplingRate;
@@ -30,6 +33,9 @@ private:
     QPushButton *btnFetchData;
     QPushButton *btnStop;
     QCustomPlot *plot;
+    QTimer *timer;
+
+    std::vector <double> data;
 #endif
 };
 
