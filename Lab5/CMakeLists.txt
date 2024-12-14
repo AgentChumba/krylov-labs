@@ -7,9 +7,7 @@ find_package(
   COMPONENTS Gui Core Widgets
   REQUIRED)
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
+
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   set(wolfram_compiler_additions "/Your/Fucking/Path")

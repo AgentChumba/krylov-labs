@@ -3,13 +3,11 @@ cmake_minimum_required(VERSION 3.28.3)
 project(krylov_labs_6 CXX)
 
 find_package(
-  Qt5
+  Qt6
   COMPONENTS Gui Core Widgets SerialPort
   REQUIRED)
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
+
 
 add_executable(
   lab_6

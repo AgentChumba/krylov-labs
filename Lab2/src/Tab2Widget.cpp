@@ -5,11 +5,9 @@
 
 #include <QDebug>
 
-class CSink : public QObject, public Oscb322lib_tlb::_IOscEvents {
-    Q_OBJECT
-
+class CSink : public Oscb322lib_tlb::_IOscEvents {
 public:
-    explicit CSink(QObject *parent = nullptr);
+    explicit CSink();
     virtual ~CSink();
 
     HRESULT STDMETHODCALLTYPE OnDataReady(unsigned long nChannelsMask) override;
@@ -52,8 +50,8 @@ UINT  m_DataSize = 4096;
 UINT iAnimateStep = 5;
 long int aTime = 0;
 
-CSink::CSink(QObject *parent)
-    : QObject(parent), m_dwRefCount(0) {}
+CSink::CSink()
+    : m_dwRefCount(0) {}
 
 CSink::~CSink() {}
 
